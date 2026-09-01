@@ -14,24 +14,24 @@ export function BookingProvider({ children }) {
         localStorage.setItem('portal_bookings', JSON.stringify(bookings));
     }, [bookings]);
 
-    // Function to check if an item is already booked
-    const isBooked = (itemId) => {
-        return bookings.some((item) => item.id === itemId);
+    // Function to check if an item is already booked on a specific date
+    const isBooked = (itemId, date) => {
+        return bookings.some((item) => item.id === itemId && item.date === date);
     };
 
     // Function to add a new booking
     const addBooking = (item) => {
-        if (!isBooked(item.id)) {
+        if (!isBooked(item.id, item.date)) {
             setBookings((prevBookings) => [...prevBookings, item]);
-            alert(`Successfully booked: ${item.name}`);
+            alert(`Successfully booked: ${item.name} for ${item.date}`);
         } else {
-            alert(`Failed to book: ${item.name}. It is already in your bookings.`);
+            alert(`Failed to book: ${item.name}. It is already booked for ${item.date}.`);
         }
     };
 
     // Function to remove a booking
-    const removeBooking = (itemId) => {
-        setBookings(bookings.filter((item) => item.id !== itemId));
+    const removeBooking = (itemId, date) => {
+        setBookings((prevBookings) => prevBookings.filter((item) => !(item.id === itemId && item.date === date)));
     };
 
     // Provide the state and functions to the rest of the app
