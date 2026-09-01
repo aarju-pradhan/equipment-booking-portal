@@ -1,0 +1,120 @@
+[
+  {
+    "id": "EQ-001",
+    "name": "Dell XPS 15 Developer Edition",
+    "type": "Equipment",
+    "category": "Laptops",
+    "status": "Available",
+    "description": "Standard 15-inch laptop for programming and general coursework."
+  },
+  {
+    "id": "EQ-002",
+    "name": "Forensic Workstation",
+    "type": "Equipment",
+    "category": "Desktops",
+    "status": "In Use",
+    "description": "High-performance desktop workstation pre-loaded with FTK Imager and OSForensics."
+  },
+  {
+    "id": "EQ-003",
+    "name": "Shure BLX288 Wireless Microphone",
+    "type": "Equipment",
+    "category": "Audio/Visual",
+    "status": "Available",
+    "description": "Dual channel wireless microphone system for presentations and events."
+  },
+  {
+    "id": "EQ-004",
+    "name": "JBL Portable Speaker",
+    "type": "Equipment",
+    "category": "Audio/Visual",
+    "status": "Available",
+    "description": "High-output portable Bluetooth speaker."
+  },
+  {
+    "id": "EQ-005",
+    "name": "Canon PIXMA TS5160",
+    "type": "Equipment",
+    "category": "Peripherals",
+    "status": "Maintenance",
+    "description": "Multifunction color printer for standard A4 document printing."
+  },
+  {
+    "id": "EQ-006",
+    "name": "Epson Perfection V39 Scanner",
+    "type": "Equipment",
+    "category": "Peripherals",
+    "status": "Available",
+    "description": "High-resolution flatbed scanner for digitizing documents and photos."
+  },
+  {
+    "id": "FA-001",
+    "name": "Small Study Room (2-4 People)",
+    "type": "Facility",
+    "category": "Study Spaces",
+    "status": "Available",
+    "description": "Quiet, compact room featuring a whiteboard and power outlets."
+  },
+  {
+    "id": "FA-002",
+    "name": "Large Study Room (6-8 People)",
+    "type": "Facility",
+    "category": "Study Spaces",
+    "status": "In Use",
+    "description": "Spacious room designed for group project collaboration."
+  },
+  {
+    "id": "FA-003",
+    "name": "Meeting Room",
+    "type": "Facility",
+    "category": "Meeting Spaces",
+    "status": "Available",
+    "description": "Formal meeting space equipped with a smartboard and video conferencing."
+  },
+  {
+    "id": "FA-004",
+    "name": "Lecture Theatre",
+    "type": "Facility",
+    "category": "Presentation Spaces",
+    "status": "Available",
+    "description": "Large presentation space featuring dual projectors and integrated audio routing."
+  },
+  {
+    "id": "FA-005",
+    "name": "Conference Room",
+    "type": "Facility",
+    "category": "Meeting Spaces",
+    "status": "Maintenance",
+    "description": "Large multi-purpose room configurable for workshops or conferences."
+  },
+  {
+    "id": "FA-006",
+    "name": "Basketball Court",
+    "type": "Facility",
+    "category": "Recreation",
+    "status": "Available",
+    "description": "Full-size hardwood court. Bring your own sports equipment."
+  },
+  {
+    "id": "FA-007",
+    "name": "Tennis Court",
+    "type": "Facility",
+    "category": "Recreation",
+    "status": "Available",
+    "description": "Standard hardcourt. Night lighting available upon request."
+  },
+  {
+    "id": "FA-008",
+    "name": "Indoor Sports Hall",
+    "type": "Facility",
+    "category": "Recreation",
+    "status": "In Use",
+    "description": "Large indoor hall suitable for badminton, volleyball, or indoor soccer."
+  }
+]
+
+
+
+
+
+
