@@ -6,9 +6,7 @@ This app follows the **Smart Services Dashboard** scenario (bookings and service
 
 ## Live URL
 
-Add your public URL here after deployment, for example:
-
-`https://YOUR-SITE.netlify.app`
+https://equipment-booking-portal.vercel.app/
 
 ## Technology stack
 
