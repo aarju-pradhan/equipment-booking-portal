@@ -1,20 +1,13 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 import { BookingContext } from '../context/BookingContext';
 
 function Profile() {
-    // Pull bookings from your global context
     const { bookings } = useContext(BookingContext);
-
-    // Toggle state for read-only vs edit mode
+    const { profile, updateProfile } = useContext(AuthContext);
     const [isEditing, setIsEditing] = useState(false);
-
-    const [formData, setFormData] = useState({
-        name: 'Aarju Pradhan',
-        email: 'CIHE251232@student.edu.au',
-        studentId: 'CIHE251232'
-    });
-
+    const [formData, setFormData] = useState(profile);
     const [feedback, setFeedback] = useState({ message: '', isError: false });
 
     const handleChange = (e) => {
@@ -29,73 +22,80 @@ function Profile() {
             return;
         }
 
-        if (!formData.email.includes('@')) {
-            setFeedback({ message: 'Please enter a valid email address.', isError: true });
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+            setFeedback({ message: 'Enter a valid email address.', isError: true });
             return;
         }
 
-        setFeedback({ message: 'Profile successfully updated!', isError: false });
-
-        // Hide success message and switch back to read-only view after 2 seconds
-        setTimeout(() => {
+        updateProfile(formData);
+        setFeedback({ message: 'Profile updated successfully.', isError: false });
+        window.setTimeout(() => {
             setFeedback({ message: '', isError: false });
             setIsEditing(false);
-        }, 2000);
+        }, 1600);
     };
 
     return (
-        <main style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
-            <h1 style={{ marginBottom: '2rem', color: '#111827' }}>User Profile</h1>
+        <main id="main-content" className="page">
+            <h1>User profile</h1>
 
-            <div style={{ display: 'grid', gap: '2rem', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
-
-                {/* Account Details Section */}
-                <section style={{ backgroundColor: '#f9fafb', padding: '2rem', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
-                    <h2 style={{ fontSize: '1.25rem', marginBottom: '1.5rem', color: '#374151' }}>Account Details</h2>
+            <div className="profile-grid">
+                <section className="card">
+                    <h2>Account details</h2>
 
                     {!isEditing ? (
-                        // Read-Only View
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <div className="stack">
                             <div>
-                                <p style={{ margin: 0, fontWeight: '500', color: '#4b5563' }}>Full Name</p>
-                                <p style={{ margin: '0.25rem 0 0 0', color: '#111827', fontSize: '1.1rem' }}>{formData.name}</p>
+                                <p className="muted">Full name</p>
+                                <p>{profile.name}</p>
                             </div>
                             <div>
-                                <p style={{ margin: 0, fontWeight: '500', color: '#4b5563' }}>University Email</p>
-                                <p style={{ margin: '0.25rem 0 0 0', color: '#111827', fontSize: '1.1rem' }}>{formData.email}</p>
+                                <p className="muted">University email</p>
+                                <p>{profile.email}</p>
                             </div>
                             <div>
-                                <p style={{ margin: 0, fontWeight: '500', color: '#4b5563' }}>Student ID</p>
-                                <p style={{ margin: '0.25rem 0 0 0', color: '#111827', fontSize: '1.1rem' }}>{formData.studentId}</p>
+                                <p className="muted">Student ID</p>
+                                <p>{profile.studentId}</p>
                             </div>
                             <button
-                                onClick={() => setIsEditing(true)}
-                                style={{ marginTop: '1rem', padding: '0.75rem', backgroundColor: '#e5e7eb', color: '#374151', border: '1px solid #d1d5db', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}
+                                type="button"
+                                className="btn btn-secondary"
+                                onClick={() => {
+                                    setFormData(profile);
+                                    setIsEditing(true);
+                                }}
                             >
-                                Edit Profile
+                                Edit profile
                             </button>
                         </div>
                     ) : (
-                        // Edit Form View
-                        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#4b5563' }}>Full Name</label>
-                                <input type="text" name="name" value={formData.name} onChange={handleChange} style={{ width: '100%', padding: '0.75rem', borderRadius: '6px', border: '1px solid #d1d5db' }} />
+                        <form className="stack" onSubmit={handleSubmit} noValidate>
+                            <div className="form-field">
+                                <label htmlFor="name">Full name</label>
+                                <input id="name" className="text-input" type="text" name="name" value={formData.name} onChange={handleChange} />
                             </div>
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#4b5563' }}>University Email</label>
-                                <input type="email" name="email" value={formData.email} onChange={handleChange} style={{ width: '100%', padding: '0.75rem', borderRadius: '6px', border: '1px solid #d1d5db' }} />
+                            <div className="form-field">
+                                <label htmlFor="email">University email</label>
+                                <input id="email" className="text-input" type="email" name="email" value={formData.email} onChange={handleChange} />
                             </div>
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500', color: '#4b5563' }}>Student ID</label>
-                                <input type="text" name="studentId" value={formData.studentId} onChange={handleChange} style={{ width: '100%', padding: '0.75rem', borderRadius: '6px', border: '1px solid #d1d5db' }} />
+                            <div className="form-field">
+                                <label htmlFor="studentId">Student ID</label>
+                                <input id="studentId" className="text-input" type="text" name="studentId" value={formData.studentId} onChange={handleChange} />
                             </div>
-                            <button type="submit" style={{ marginTop: '1rem', padding: '0.75rem', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>
-                                Save Changes
+                            <button type="submit" className="btn btn-primary">Save changes</button>
+                            <button
+                                type="button"
+                                className="btn btn-secondary"
+                                onClick={() => {
+                                    setFormData(profile);
+                                    setFeedback({ message: '', isError: false });
+                                    setIsEditing(false);
+                                }}
+                            >
+                                Cancel
                             </button>
-
                             {feedback.message && (
-                                <div style={{ marginTop: '1rem', padding: '0.75rem', borderRadius: '6px', backgroundColor: feedback.isError ? '#fee2e2' : '#dcfce3', color: feedback.isError ? '#dc2626' : '#166534', textAlign: 'center', fontWeight: '500' }}>
+                                <div className={`feedback ${feedback.isError ? 'feedback-error' : 'feedback-success'}`} role="status">
                                     {feedback.message}
                                 </div>
                             )}
@@ -103,30 +103,24 @@ function Profile() {
                     )}
                 </section>
 
-                {/* Dynamic Recent Activity Section */}
-                <section style={{ padding: '2rem', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
-                    <h2 style={{ fontSize: '1.25rem', marginBottom: '1.5rem', color: '#374151' }}>Recent Activity</h2>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        {bookings && bookings.length > 0 ? (
-                            bookings.map((booking, index) => (
-                                <div key={index} style={{ padding: '1rem', border: '1px solid #d1d5db', borderRadius: '6px', backgroundColor: '#f9fafb' }}>
-                                    <p style={{ margin: '0 0 0.5rem 0', fontWeight: 'bold', color: '#111827' }}>{booking.name}</p>
-                                    <p style={{ margin: 0, fontSize: '0.875rem', color: '#4b5563' }}>Booked for: {booking.date}</p>
-                                </div>
+                <section className="card">
+                    <h2>Recent activity</h2>
+                    <div className="stack">
+                        {bookings.length > 0 ? (
+                            bookings.map((booking) => (
+                                <article key={`${booking.id}-${booking.date}`} className="feature-card" style={{ textAlign: 'left' }}>
+                                    <h3>{booking.name}</h3>
+                                    <p className="muted">Booked for {booking.date}</p>
+                                </article>
                             ))
                         ) : (
                             <>
-                                <p style={{ color: '#6b7280', fontStyle: 'italic' }}>No active equipment or facility reservations found.</p>
-                                <Link to="/catalog" style={{ textDecoration: 'none' }}>
-                                    <button style={{ width: '100%', padding: '0.5rem 1rem', backgroundColor: '#f3f4f6', color: '#374151', border: '1px solid #d1d5db', borderRadius: '6px', cursor: 'pointer' }}>
-                                        Browse Catalog
-                                    </button>
-                                </Link>
+                                <p className="muted">No active equipment or facility reservations.</p>
+                                <Link to="/catalog" className="btn btn-secondary">Browse catalog</Link>
                             </>
                         )}
                     </div>
                 </section>
-
             </div>
         </main>
     );

@@ -1,44 +1,52 @@
-import React, { createContext, useState, useEffect} from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 
-// Create a context for booking data
 export const BookingContext = createContext();
 
-// Create a provider component
 export function BookingProvider({ children }) {
     const [bookings, setBookings] = useState(() => {
         const savedData = localStorage.getItem('portal_bookings');
         return savedData ? JSON.parse(savedData) : [];
     });
 
+    const [toast, setToast] = useState(null);
+
     useEffect(() => {
         localStorage.setItem('portal_bookings', JSON.stringify(bookings));
     }, [bookings]);
 
-    // Function to check if an item is already booked on a specific date
+    const showToast = (message, type = 'success') => {
+        setToast({ message, type });
+        window.setTimeout(() => setToast(null), 3200);
+    };
+
     const isBooked = (itemId, date) => {
         return bookings.some((item) => item.id === itemId && item.date === date);
     };
 
-    // Function to add a new booking
     const addBooking = (item) => {
-        if (!isBooked(item.id, item.date)) {
-            setBookings((prevBookings) => [...prevBookings, item]);
-            alert(`Successfully booked: ${item.name} for ${item.date}`);
-        } else {
-            alert(`Failed to book: ${item.name}. It is already booked for ${item.date}.`);
+        if (!item.date) {
+            showToast('Choose a date before booking.', 'error');
+            return false;
         }
+
+        if (isBooked(item.id, item.date)) {
+            showToast(`${item.name} is already booked for ${item.date}.`, 'error');
+            return false;
+        }
+
+        setBookings((prevBookings) => [...prevBookings, item]);
+        showToast(`Booked ${item.name} for ${item.date}.`);
+        return true;
     };
 
-    // Function to remove a booking
     const removeBooking = (itemId, date) => {
         setBookings((prevBookings) => prevBookings.filter((item) => !(item.id === itemId && item.date === date)));
+        showToast('Booking cancelled.');
     };
 
-    // Provide the state and functions to the rest of the app
     return (
-        <BookingContext.Provider value={{ bookings, addBooking, removeBooking, isBooked }}>
+        <BookingContext.Provider value={{ bookings, addBooking, removeBooking, isBooked, toast }}>
             {children}
         </BookingContext.Provider>
     );
 }
-

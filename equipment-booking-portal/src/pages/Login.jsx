@@ -1,111 +1,135 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 
 function Login() {
     const [studentId, setStudentId] = useState('');
     const [password, setPassword] = useState('');
     const [isResetMode, setIsResetMode] = useState(false);
-
-    // Pull the login function from our Auth vault
+    const [feedback, setFeedback] = useState('');
+    const [feedbackIsError, setFeedbackIsError] = useState(false);
     const { login } = useContext(AuthContext);
 
     const handleLoginSubmit = (e) => {
-        e.preventDefault(); // Prevents the page from refreshing on submit
+        e.preventDefault();
+        setFeedback('');
+        setFeedbackIsError(false);
 
-        // Try to log in (accepts anything as long as both fields are typed)
-        const success = login(studentId, password);
+        if (!studentId.trim() || !password.trim()) {
+            setFeedback('Enter both your student ID and password.');
+            setFeedbackIsError(true);
+            return;
+        }
+
+        const success = login(studentId.trim(), password);
         if (!success) {
-            alert("Please enter both your Student ID and Password.");
+            setFeedback('Unable to sign in. Check your details and try again.');
+            setFeedbackIsError(true);
         }
     };
 
     const handleResetSubmit = (e) => {
         e.preventDefault();
-        if (studentId) {
-            alert(`A password reset link has been sent to the university email associated with ${studentId}.`);
-            setIsResetMode(false); // Return to login screen
-            setPassword(''); // Clear the password field for security
-        } else {
-            alert("Please enter your Student ID to reset your password.");
+        if (!studentId.trim()) {
+            setFeedback('Enter your student ID to request a reset link.');
+            setFeedbackIsError(true);
+            return;
         }
+        setFeedbackIsError(false);
+        setFeedback(`A password reset link would be sent to the university email for ${studentId}.`);
+        setPassword('');
     };
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#f3f4f6' }}>
-            <div style={{ backgroundColor: 'white', padding: '3rem', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', width: '100%', maxWidth: '400px' }}>
-
-                <h2 style={{ textAlign: 'center', marginBottom: '2rem', color: '#111827' }}>
-                    {isResetMode ? 'Reset Password' : 'University Portal Login'}
-                </h2>
+        <main className="login-screen">
+            <div className="login-card">
+                <h1>{isResetMode ? 'Reset password' : 'University portal login'}</h1>
 
                 {isResetMode ? (
-                    // --- FORGOT PASSWORD VIEW ---
-                    <form onSubmit={handleResetSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                        <p style={{ fontSize: '0.875rem', color: '#4b5563', margin: '0 0 -0.5rem 0' }}>
-                            Enter your Student ID and we will send a recovery link to your university email.
+                    <form className="stack" onSubmit={handleResetSubmit} noValidate>
+                        <p className="muted">
+                            Enter your student ID and we will send a recovery link to your university email.
                         </p>
-                        <div>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Student ID</label>
+                        <div className="form-field">
+                            <label htmlFor="reset-student-id">Student ID</label>
                             <input
+                                id="reset-student-id"
+                                className="text-input"
                                 type="text"
                                 value={studentId}
                                 onChange={(e) => setStudentId(e.target.value)}
+                                autoComplete="username"
                                 placeholder="e.g. s1234567"
-                                style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid #d1d5db', boxSizing: 'border-box' }}
                             />
                         </div>
-                        <button type="submit" style={{ padding: '0.75rem', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '4px', fontSize: '1rem', cursor: 'pointer', fontWeight: 'bold' }}>
-                            Send Reset Link
-                        </button>
+                        <button type="submit" className="btn btn-primary">Send reset link</button>
                         <button
                             type="button"
-                            onClick={() => setIsResetMode(false)}
-                            style={{ background: 'none', border: 'none', color: '#3b82f6', textDecoration: 'underline', cursor: 'pointer', marginTop: '-0.5rem' }}
+                            className="inline-link"
+                            onClick={() => {
+                                setIsResetMode(false);
+                                setFeedback('');
+                                setFeedbackIsError(false);
+                            }}
                         >
-                            Back to Sign In
+                            Back to sign in
                         </button>
+                        {feedback && (
+                            <div className={`feedback ${feedbackIsError ? 'feedback-error' : 'feedback-success'}`} role="status">
+                                {feedback}
+                            </div>
+                        )}
                     </form>
                 ) : (
-                    // --- STANDARD LOGIN VIEW ---
-                    <form onSubmit={handleLoginSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                        <div>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Student ID</label>
+                    <form className="stack" onSubmit={handleLoginSubmit} noValidate>
+                        <div className="form-field">
+                            <label htmlFor="student-id">Student ID</label>
                             <input
+                                id="student-id"
+                                className="text-input"
                                 type="text"
                                 value={studentId}
                                 onChange={(e) => setStudentId(e.target.value)}
+                                autoComplete="username"
                                 placeholder="e.g. s1234567"
-                                style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid #d1d5db', boxSizing: 'border-box' }}
                             />
                         </div>
-                        <div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.5rem' }}>
-                                <label style={{ fontWeight: '500' }}>Password</label>
-                                {/* NEW: The toggle button */}
+                        <div className="form-field">
+                            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.75rem' }}>
+                                <label htmlFor="password">Password</label>
                                 <button
                                     type="button"
-                                    onClick={() => setIsResetMode(true)}
-                                    style={{ background: 'none', border: 'none', color: '#3b82f6', fontSize: '0.875rem', cursor: 'pointer', padding: 0 }}
+                                    className="inline-link"
+                                    onClick={() => {
+                                        setIsResetMode(true);
+                                        setFeedback('');
+                                        setFeedbackIsError(false);
+                                    }}
                                 >
                                     Forgot password?
                                 </button>
                             </div>
                             <input
+                                id="password"
+                                className="text-input"
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
+                                autoComplete="current-password"
                                 placeholder="Enter your password"
-                                style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid #d1d5db', boxSizing: 'border-box' }}
                             />
                         </div>
-                        <button type="submit" style={{ padding: '0.75rem', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '4px', fontSize: '1rem', cursor: 'pointer', fontWeight: 'bold' }}>
-                            Sign In
-                        </button>
+                        <button type="submit" className="btn btn-primary">Sign in</button>
+                        <p className="muted">Demo login: any student ID and password will sign you in.</p>
+                        {feedback && (
+                            <div className={`feedback ${feedbackIsError ? 'feedback-error' : 'feedback-success'}`} role="alert">
+                                {feedback}
+                            </div>
+                        )}
                     </form>
                 )}
             </div>
-        </div>
+        </main>
     );
 }
 
-export default Login; 
+export default Login;

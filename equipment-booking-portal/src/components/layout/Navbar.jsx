@@ -1,43 +1,49 @@
-import React, { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext, useState } from 'react';
+import { NavLink } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 
 function Navbar() {
     const { logout } = useContext(AuthContext);
+    const [menuOpen, setMenuOpen] = useState(false);
+
+    const closeMenu = () => setMenuOpen(false);
 
     return (
-        <nav style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem 2rem', backgroundColor: '#f3f4f6', borderBottom: '1px solid #e5e7eb', alignItems: 'center' }}>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <img
-                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGTrFZExGdzuMjItxAx97A0XmvoV9ifSjVUYc0DemYLM18SZg8iWCL0Lb_&s=10"
-                    alt="Portal Logo"
-                    style={{ height: '40px', borderRadius: '4px' }}
-                />
-                <h2 style={{ margin: 0, color: '#111827', fontSize: '1.25rem' }}>University Booking Portal</h2>
-            </div>
-
-            <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-                <Link to="/" style={{ textDecoration: 'none', color: '#374151', fontWeight: '500', fontSize: '1rem', display: 'flex', alignItems: 'center' }}>Home</Link>
-                <Link to="/catalog" style={{ textDecoration: 'none', color: '#374151', fontWeight: '500', fontSize: '1rem', display: 'flex', alignItems: 'center' }}>Catalog</Link>
-                <Link to="/bookings" style={{ textDecoration: 'none', color: '#374151', fontWeight: '500', fontSize: '1rem', display: 'flex', alignItems: 'center' }}>My Bookings</Link>
-                <Link to="/profile" style={{ textDecoration: 'none', color: '#374151', fontWeight: '500', fontSize: '1rem', display: 'flex', alignItems: 'center' }}>Profile</Link>
+        <header className="site-header">
+            <a className="skip-link" href="#main-content">Skip to main content</a>
+            <nav className="nav-bar" aria-label="Main">
+                <NavLink to="/" className="brand" onClick={closeMenu}>
+                    <img
+                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGTrFZExGdzuMjItxAx97A0XmvoV9ifSjVUYc0DemYLM18SZg8iWCL0Lb_&s=10"
+                        alt="CIHE logo"
+                        width="40"
+                        height="40"
+                    />
+                    <h1>University Booking Portal</h1>
+                </NavLink>
 
                 <button
-                    onClick={logout}
-                    style={{ background: 'none', border: 'none', color: '#ef4444', fontWeight: 'bold', cursor: 'pointer', padding: 0, fontSize: '1rem', fontFamily: 'inherit', display: 'flex', alignItems: 'center' }}
+                    type="button"
+                    className="nav-toggle"
+                    aria-expanded={menuOpen}
+                    aria-controls="site-navigation"
+                    onClick={() => setMenuOpen((open) => !open)}
                 >
-                    Log Out
+                    {menuOpen ? 'Close' : 'Menu'}
                 </button>
-            </div>
 
-        </nav>
+                <div id="site-navigation" className={`nav-links ${menuOpen ? 'is-open' : ''}`}>
+                    <NavLink to="/" end onClick={closeMenu}>Home</NavLink>
+                    <NavLink to="/catalog" onClick={closeMenu}>Catalog</NavLink>
+                    <NavLink to="/bookings" onClick={closeMenu}>My Bookings</NavLink>
+                    <NavLink to="/profile" onClick={closeMenu}>Profile</NavLink>
+                    <button type="button" className="btn btn-ghost" onClick={() => { closeMenu(); logout(); }}>
+                        Log out
+                    </button>
+                </div>
+            </nav>
+        </header>
     );
 }
 
 export default Navbar;
-
-
-
-
-

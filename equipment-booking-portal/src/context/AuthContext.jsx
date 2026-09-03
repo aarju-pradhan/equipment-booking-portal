@@ -1,34 +1,54 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 
 export const AuthContext = createContext();
-export function AuthProvider({ children }) {
 
-    // Check local storage to see if they logged in previously
+const defaultProfile = {
+    name: 'Demo Student',
+    email: 'demo.student@cihe.edu.au',
+    studentId: 's1234567'
+};
+
+export function AuthProvider({ children }) {
     const [isLoggedIn, setIsLoggedIn] = useState(() => {
         return localStorage.getItem('portal_auth') === 'true';
     });
 
-    // Auto-save login state to browser storage
+    const [profile, setProfile] = useState(() => {
+        const saved = localStorage.getItem('portal_profile');
+        return saved ? JSON.parse(saved) : defaultProfile;
+    });
+
     useEffect(() => {
         localStorage.setItem('portal_auth', isLoggedIn);
     }, [isLoggedIn]);
 
-    // Simple login function for our mockup
+    useEffect(() => {
+        localStorage.setItem('portal_profile', JSON.stringify(profile));
+    }, [profile]);
+
     const login = (studentId, password) => {
         if (studentId && password) {
+            setProfile((current) => ({
+                ...current,
+                studentId,
+                email: current.email || `${studentId.toLowerCase()}@student.cihe.edu.au`
+            }));
             setIsLoggedIn(true);
             return true;
         }
         return false;
     };
 
-    // Logout function
     const logout = () => {
         setIsLoggedIn(false);
     };
 
+    const updateProfile = (nextProfile) => {
+        setProfile(nextProfile);
+    };
+
     return (
-        <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+        <AuthContext.Provider value={{ isLoggedIn, login, logout, profile, updateProfile }}>
             {children}
         </AuthContext.Provider>
     );
