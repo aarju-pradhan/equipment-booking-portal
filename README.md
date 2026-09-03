@@ -1,6 +1,6 @@
 # University Equipment Booking Portal
 
-Frontend web application for ICT930 Assignment 2. Students can browse campus equipment and facilities, reserve a date, manage bookings, and update a profile.
+Frontend web application for ICT930 Assignment 2. Students can browse campus equipment and facilities, reserve a date, manage bookings, and update their profile.
 
 This app follows the **Smart Services Dashboard** scenario (bookings and service tracking).
 
@@ -65,8 +65,8 @@ The portal is gated behind a login screen. Any non-empty student ID and password
 
 ## Screenshots
 
-Store at least six captures in `docs/screenshots/` (desktop and mobile). Suggested set: login, home, catalog, bookings, profile, and mobile navigation.
+Store captures in `docs/screenshots/` (desktop and mobile).
 
 ## ZIP contents
 
-Include source code (not `node_modules`), this README, `docs/Reflection.md`, `docs/Team-Contribution-Statement.md`, and `docs/screenshots/`. Complete the teammate name placeholders before submission.
+Include source code, this README, Reflection, Team Contribution Statement, and screenshots.
