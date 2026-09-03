@@ -1,14 +1,20 @@
 # Screenshots (ICT930 Assignment 2)
 
-Place at least six images here. Captures taken during development:
+Captures taken during development:
 
 | File | Screen | Viewport |
 |---|---|---|
-| `02-home-desktop.png` | Home | Desktop |
-| `03-catalog-desktop.png` | Catalog with search and filters | Desktop |
-| `04-bookings-desktop.png` | My Bookings | Desktop |
-| `05-profile-desktop.png` | Profile | Desktop |
-| `06-catalog-mobile.png` | Catalog | Mobile |
-| `07-mobile-nav.png` | Mobile menu open | Mobile |
+| `booking-mobile.jpeg` | My Bookings | Mobile |
+| `booking-desktop.png` | My Bookings | Desktop |
+| `catalog-desktop.png` | Catalog | Desktop |
+| `catalog-mobile.jpeg` | Catalog | Mobile |
+| `edit-mobile.jpeg` | Profile | Mobile |
+| `home-desktop.png` | Home | Desktop |
+| `home-mobile.jpeg` | Home | Mobile |
+| `login-desktop.png` | Login | Desktop |
+| `login-mobile.jpeg` | Login | Mobile |
+| `menu-mobile.jpeg` | Menu | Mobile |
+| `profile-desktop.png` | Profile | Desktop |
+| `profile-mobile.jpeg` | Profile | Mobile |
 
-Add `01-login-desktop.png` yourself: log out (or use a private window), then screenshot the login form. Recapture any shot in a full Chrome window if the Cursor preview cropped the layout.
+
