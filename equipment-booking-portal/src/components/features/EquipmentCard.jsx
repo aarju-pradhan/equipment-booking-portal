@@ -4,9 +4,10 @@ import { BookingContext } from '../../context/BookingContext';
 function EquipmentCard({ item, isBookingsPage }) {
     const { bookings, addBooking, removeBooking, isBooked } = useContext(BookingContext);
     const [selectedDate, setSelectedDate] = useState('');
+    const today = new Date().toISOString().split('T')[0];
 
     let displayStatus = 'Select Date';
-    let badgeColor = '#f3f4f6'; // Gray
+    let badgeColor = '#f3f4f6';
     let badgeTextColor = '#6b7280';
 
     const alreadyBookedForSelected = selectedDate ? isBooked(item.id, selectedDate) : false;
@@ -33,7 +34,7 @@ function EquipmentCard({ item, isBookingsPage }) {
     const canBook = selectedDate !== '' && displayStatus === 'Available';
 
     return (
-        <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ backgroundColor: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '1.5rem', display: 'flex', flexDirection: 'column', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' }}>
             <h3 style={{ margin: '0 0 0.5rem 0', color: '#111827' }}>{item.name}</h3>
             <p style={{ margin: '0 0 1rem 0', fontSize: '0.875rem', color: '#6b7280' }}>
                 {item.type} | {item.category}
@@ -50,6 +51,7 @@ function EquipmentCard({ item, isBookingsPage }) {
                 ) : (
                     <input
                         type="date"
+                        min={today}
                         value={selectedDate}
                         onChange={(e) => setSelectedDate(e.target.value)}
                         style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #d1d5db' }}
@@ -70,7 +72,6 @@ function EquipmentCard({ item, isBookingsPage }) {
 
                 {isBookingsPage ? (
                     <button
-                        // UPDATED: Pass both ID and Date to cancel only that specific day
                         onClick={() => removeBooking(item.id, item.date)}
                         style={{ padding: '0.5rem 1rem', backgroundColor: '#ef4444', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
                     >

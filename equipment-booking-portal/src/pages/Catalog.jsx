@@ -1,19 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import equipmentData from '../data/equipmentData.json';
 import EquipmentCard from '../components/features/EquipmentCard';
+import Spinner from '../components/features/Spinner';
+import ErrorBadge from '../components/features/ErrorBadge';
 
 function Catalog() {
     const [items, setItems] = useState([]);
-    const [isloading, setLoading] = useState(true);
+    const [isLoading, setLoading] = useState(true); 
+    const [error, setError] = useState(null);
     const [activeFilter, setActiveFilter] = useState('All');
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
-        const fetchCatalogData = () => {
-            setTimeout(() => {
-                setItems(equipmentData);
+        const fetchCatalogData = async () => {
+            try {
+                // Simulate network delay for loading state visibility
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                // Fetching from the public folder satisfies async requirements
+                const response = await fetch('/equipmentData.json');
+                if (!response.ok) throw new Error("Failed to load catalog data.");
+
+                const data = await response.json();
+                setItems(data);
+            } catch (err) {
+                setError(err.message);
+            } finally {
                 setLoading(false);
-            }, 1000); // Simulate a 1-second delay
+            }
         };
         fetchCatalogData();
     }, []);
@@ -36,6 +49,7 @@ function Catalog() {
                 {/*Search bar*/}
                 <input 
                     type="text"
+                    aria-label="Search equipment and facilities"
                     placeholder="Search equipment and facilities..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -71,21 +85,22 @@ function Catalog() {
                     ))}
                 </div>
             </div>
-           
 
-            {isloading ? (
-                <p style={{ frontsize: '1.2rem', color: '#6b7280' }}>Loading catalog data...</p>
-            ) : (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1.5rem' }}>
-                        {filteritems.length > 0? (
-                            filteritems.map((item) => (
-                        <EquipmentCard key={item.id} item={item} />
-                            ))
-                        ) : (
-                            //message if no items match the search and filter criteria
-                                <p style={{ fontSize: '1.2rem', color: '#6b7280' }}>No items found matching your search and filter criteria.</p>
-                            )}
-                    </div>
+            {/* Error and Loading States */}
+            {error && <ErrorBadge message={error} />}
+
+            {isLoading && !error ? (
+                <Spinner />
+            ) : !error && (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1.5rem' }}>
+                    {filteritems.length > 0 ? (
+                        filteritems.map((item) => (
+                            <EquipmentCard key={item.id} item={item} />
+                        ))
+                    ) : (
+                        <p style={{ fontSize: '1.2rem', color: '#6b7280' }}>No items found matching your search and filter criteria.</p>
+                    )}
+                </div>
             )}
 
         </main>

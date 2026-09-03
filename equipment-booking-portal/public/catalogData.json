@@ -1,0 +1,30 @@
+[
+  {
+    "id": "e1",
+    "name": "Digital Forensics Workstation",
+    "category": "Equipment",
+    "description": "High-performance rig pre-loaded with FTK Imager, OSForensics, and Wireshark for network packet capture.",
+    "image": "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&w=600&q=80"
+  },
+  {
+    "id": "e2",
+    "name": "Canon PIXMA TS5160",
+    "category": "Equipment",
+    "description": "Multifunction color printer and scanner for physical documentation and report generation.",
+    "image": "https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?auto=format&fit=crop&w=600&q=80"
+  },
+  {
+    "id": "f1",
+    "name": "Collaborative Study Room B",
+    "category": "Facilities",
+    "description": "Soundproof meeting space equipped with dual monitors and a large whiteboard.",
+    "image": "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80"
+  },
+  {
+    "id": "f2",
+    "name": "Quiet Pod",
+    "category": "Facilities",
+    "description": "Isolated single-occupancy desk for focused academic research and writing.",
+    "image": "https://images.unsplash.com/photo-1517502884422-41eaead166d4?auto=format&fit=crop&w=600&q=80"
+  }
+]
