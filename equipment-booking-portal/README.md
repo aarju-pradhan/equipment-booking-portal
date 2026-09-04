@@ -19,6 +19,8 @@ https://equipment-booking-portal.vercel.app/
 
 ## Installation
 
+Open the folder that contains package.json first (the inner equipment-booking-portal folder)
+
 ```bash
 npm install
 npm run dev
@@ -57,16 +59,10 @@ The portal is gated behind a login screen. Any non-empty student ID and password
 
 ## Deployment
 
-1. Push the project to GitHub.
-2. Import the repository into [Netlify](https://www.netlify.com/) or [Vercel](https://vercel.com/).
-3. Build command: `npm run build`
-4. Publish directory: `dist`
-5. After deploy, paste the public URL at the top of this README and test login, catalog loading, booking, and direct URLs such as `/catalog`.
+Deployed on Vercel. Build: `npm run build`. Output: `dist`.
+
 
 ## Screenshots
 
-Store captures in `docs/screenshots/` (desktop and mobile).
+Desktop and mobile screenshots are in `docs/screenshots/`.
 
-## ZIP contents
-
-Include source code, this README, Reflection, Team Contribution Statement, and screenshots.
