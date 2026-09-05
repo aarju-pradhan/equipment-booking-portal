@@ -7,6 +7,13 @@ This app follows the **Smart Services Dashboard** scenario (bookings and service
 ## Live URL
 
 https://equipment-booking-portal.vercel.app/
+> **⚠️ IMPORTANT NOTE : FALSE POSITIVE WARNING**
+>
+> Google Safe Browsing is incorrectly flagging this Vercel domain as a "Dangerous site" because it detects the assignment's mock student login screen. A false positive report has already been submitted to Google.
+> 
+> **To bypass the warning and view the live assignment:**
+> 1. Click the **Details** button in the bottom left corner of the red screen.
+> 2. Click the **"visit this unsafe site"** link at the bottom of the expanded text.
 
 ## Technology stack
 
