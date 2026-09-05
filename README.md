@@ -18,8 +18,6 @@ https://equipment-booking-portal.vercel.app/
 
 ## Technology stack
 
-## Technology stack
-
 - React 19 (functional components and hooks)
 - Vite
 - React Router
