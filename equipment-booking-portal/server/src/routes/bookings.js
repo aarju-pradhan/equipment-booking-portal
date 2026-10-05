@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { Booking } from '../models/Booking.js';
 import { Equipment } from '../models/Equipment.js';
 import { requireAuth } from '../middleware/auth.js';
+import { isValidObjectId, parseBookingDate } from '../validation.js';
 
 export const bookingsRouter = Router();
 
@@ -36,11 +37,19 @@ bookingsRouter.get('/', requireAuth, async (req, res) => {
 
 bookingsRouter.post('/', requireAuth, async (req, res) => {
     const equipmentId = String(req.body.id || req.body.equipmentId || '').trim();
-    const date = String(req.body.date || '').trim();
+    const dateInput = String(req.body.date || '').trim();
 
-    if (!equipmentId || !date) {
+    if (!equipmentId || !dateInput) {
         return res.status(400).json({ message: 'Choose an item and a date before booking.' });
     }
+    if (!isValidObjectId(equipmentId)) {
+        return res.status(400).json({ message: 'Catalog item not found.' });
+    }
+    const parsedDate = parseBookingDate(dateInput);
+    if (parsedDate.error) {
+        return res.status(400).json({ message: parsedDate.error });
+    }
+    const date = parsedDate.date;
 
     try {
         const item = await Equipment.findById(equipmentId);
@@ -74,6 +83,10 @@ bookingsRouter.post('/', requireAuth, async (req, res) => {
 });
 
 bookingsRouter.delete('/:id', requireAuth, async (req, res) => {
+    if (!isValidObjectId(req.params.id)) {
+        return res.status(400).json({ message: 'Booking not found.' });
+    }
+
     try {
         const booking = await Booking.findById(req.params.id);
         if (!booking) {

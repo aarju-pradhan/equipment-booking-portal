@@ -3,6 +3,7 @@ import { Equipment } from '../models/Equipment.js';
 import { Booking } from '../models/Booking.js';
 import { getCampus } from '../campuses.js';
 import { requireAdmin, requireAuth } from '../middleware/auth.js';
+import { isValidObjectId, parseItemStatus, parseItemType } from '../validation.js';
 
 export const equipmentRouter = Router();
 
@@ -39,17 +40,22 @@ equipmentRouter.post('/', requireAuth, requireAdmin, async (req, res) => {
     if (!code || !name || !type || !category || !description) {
         return res.status(400).json({ message: 'Code, name, type, category and description are required.' });
     }
-    if (!['Equipment', 'Facility'].includes(type)) {
-        return res.status(400).json({ message: 'Type must be Equipment or Facility.' });
+    const parsedType = parseItemType(type);
+    if (parsedType.error) {
+        return res.status(400).json({ message: parsedType.error });
+    }
+    const parsedStatus = parseItemStatus(status);
+    if (parsedStatus.error) {
+        return res.status(400).json({ message: parsedStatus.error });
     }
 
     try {
         const item = await Equipment.create({
             code,
             name,
-            type,
+            type: parsedType.type,
             category,
-            status,
+            status: parsedStatus.status,
             description,
             image,
             campusId: campus.id,
@@ -69,17 +75,35 @@ equipmentRouter.post('/', requireAuth, requireAdmin, async (req, res) => {
 });
 
 equipmentRouter.put('/:id', requireAuth, requireAdmin, async (req, res) => {
+    if (!isValidObjectId(req.params.id)) {
+        return res.status(400).json({ message: 'Catalog item not found.' });
+    }
+
     try {
         const item = await Equipment.findById(req.params.id);
         if (!item) {
             return res.status(404).json({ message: 'Catalog item not found.' });
         }
 
-        const fields = ['code', 'name', 'type', 'category', 'status', 'description', 'image'];
+        const fields = ['code', 'name', 'category', 'description', 'image'];
         for (const field of fields) {
             if (req.body[field] !== undefined) {
                 item[field] = String(req.body[field]).trim();
             }
+        }
+        if (req.body.type !== undefined) {
+            const parsedType = parseItemType(req.body.type);
+            if (parsedType.error) {
+                return res.status(400).json({ message: parsedType.error });
+            }
+            item.type = parsedType.type;
+        }
+        if (req.body.status !== undefined) {
+            const parsedStatus = parseItemStatus(req.body.status, item.status);
+            if (parsedStatus.error) {
+                return res.status(400).json({ message: parsedStatus.error });
+            }
+            item.status = parsedStatus.status;
         }
         if (req.body.campusId) {
             const campus = getCampus(req.body.campusId);
@@ -93,12 +117,19 @@ equipmentRouter.put('/:id', requireAuth, requireAdmin, async (req, res) => {
         await item.save();
         return res.json(item.toClient());
     } catch (err) {
+        if (err.name === 'ValidationError') {
+            return res.status(400).json({ message: err.message });
+        }
         console.error(err);
         return res.status(500).json({ message: 'Could not update the catalog item.' });
     }
 });
 
 equipmentRouter.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
+    if (!isValidObjectId(req.params.id)) {
+        return res.status(400).json({ message: 'Catalog item not found.' });
+    }
+
     try {
         const item = await Equipment.findByIdAndDelete(req.params.id);
         if (!item) {
