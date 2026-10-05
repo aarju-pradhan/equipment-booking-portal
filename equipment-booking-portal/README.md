@@ -9,6 +9,14 @@ This app follows the **Smart Services Dashboard** / campus facility booking scen
 Frontend: https://equipment-booking-portal.vercel.app/  
 API: run locally (see Installation) until the backend is deployed.
 
+> **⚠️ IMPORTANT NOTE : FALSE POSITIVE WARNING**
+>
+> Google Safe Browsing is incorrectly flagging this Vercel domain as a "Dangerous site" because it detects the assignment's mock student login screen. A false positive report has already been submitted to Google.
+>
+> **To bypass the warning and view the live assignment:**
+> 1. Click the **Details** button in the bottom left corner of the red screen.
+> 2. Click the **"visit this unsafe site"** link at the bottom of the expanded text.
+
 ## Technology stack
 
 - React 19 (functional components and hooks)
@@ -24,7 +32,7 @@ API: run locally (see Installation) until the backend is deployed.
 Open the inner `equipment-booking-portal` folder (the one with `package.json`).
 
 1. Create a free cluster at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
-2. Copy `server/.env.example` to `server/.env` and paste your connection string and a JWT secret.
+2. Copy `server/.env.example` to `server/.env` and paste your connection string and a JWT secret. Do not commit `.env`.
 3. Install and seed:
 
 ```bash
@@ -71,3 +79,7 @@ You can also create a new student account from the login screen.
 - Frontend: Vercel, build `npm run build`, output `dist`, root `equipment-booking-portal`
 - Backend: deploy the `server` folder (Render or Railway) and set `MONGODB_URI`, `JWT_SECRET`, and `CORS_ORIGIN`
 - Point the frontend to the API with `VITE_API_URL` if it is not on the same host
+
+## Screenshots
+
+Desktop and mobile screenshots are in `docs/screenshots/`.

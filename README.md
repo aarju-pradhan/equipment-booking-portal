@@ -8,6 +8,14 @@ This app follows the **Smart Services Dashboard** scenario (bookings and service
 
 https://equipment-booking-portal.vercel.app/
 
+> **⚠️ IMPORTANT NOTE : FALSE POSITIVE WARNING**
+>
+> Google Safe Browsing is incorrectly flagging this Vercel domain as a "Dangerous site" because it detects the assignment's mock student login screen. A false positive report has already been submitted to Google.
+> 
+> **To bypass the warning and view the live assignment:**
+> 1. Click the **Details** button in the bottom left corner of the red screen.
+> 2. Click the **"visit this unsafe site"** link at the bottom of the expanded text.
+
 ## Technology stack
 
 - React 19 (functional components and hooks)
@@ -18,6 +26,8 @@ https://equipment-booking-portal.vercel.app/
 - CSS custom properties for a consistent visual language
 
 ## Installation
+
+Open the folder that contains package.json first (the inner equipment-booking-portal folder)
 
 ```bash
 npm install
@@ -57,16 +67,9 @@ The portal is gated behind a login screen. Any non-empty student ID and password
 
 ## Deployment
 
-1. Push the project to GitHub.
-2. Import the repository into [Netlify](https://www.netlify.com/) or [Vercel](https://vercel.com/).
-3. Build command: `npm run build`
-4. Publish directory: `dist`
-5. After deploy, paste the public URL at the top of this README and test login, catalog loading, booking, and direct URLs such as `/catalog`.
+Deployed on Vercel. Build: `npm run build`. Output: `dist`.
+
 
 ## Screenshots
 
-Store captures in `docs/screenshots/` (desktop and mobile).
-
-## ZIP contents
-
-Include source code, this README, Reflection, Team Contribution Statement, and screenshots.
+Desktop and mobile screenshots are in `docs/screenshots/`.
