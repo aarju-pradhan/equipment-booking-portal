@@ -8,13 +8,18 @@ import Catalog from './pages/Catalog';
 import Bookings from './pages/Bookings';
 import Profile from './pages/Profile';
 import Login from './pages/Login';
+import Admin from './pages/Admin';
 import NotFound from './pages/NotFound';
 import { AuthContext } from './context/AuthContext';
 import { BookingContext } from './context/BookingContext';
 
 function App() {
-    const { isLoggedIn } = useContext(AuthContext);
+    const { isLoggedIn, authReady, profile } = useContext(AuthContext);
     const { toast } = useContext(BookingContext);
+
+    if (!authReady) {
+        return <main className="login-screen"><p className="muted">Loading session…</p></main>;
+    }
 
     if (!isLoggedIn) {
         return <Login />;
@@ -25,8 +30,14 @@ function App() {
             <Navbar />
             <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/catalog" element={<Catalog />} />
-                <Route path="/bookings" element={<Bookings />} />
+                {profile.role === 'admin' ? (
+                    <Route path="/admin" element={<Admin />} />
+                ) : (
+                    <>
+                        <Route path="/catalog" element={<Catalog />} />
+                        <Route path="/bookings" element={<Bookings />} />
+                    </>
+                )}
                 <Route path="/profile" element={<Profile />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>

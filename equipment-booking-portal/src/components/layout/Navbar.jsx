@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 
 function Navbar() {
-    const { logout } = useContext(AuthContext);
+    const { logout, profile } = useContext(AuthContext);
     const [menuOpen, setMenuOpen] = useState(false);
 
     const closeMenu = () => setMenuOpen(false);
@@ -34,8 +34,14 @@ function Navbar() {
 
                 <div id="site-navigation" className={`nav-links ${menuOpen ? 'is-open' : ''}`}>
                     <NavLink to="/" end onClick={closeMenu}>Home</NavLink>
-                    <NavLink to="/catalog" onClick={closeMenu}>Catalog</NavLink>
-                    <NavLink to="/bookings" onClick={closeMenu}>My Bookings</NavLink>
+                    {profile.role === 'admin' ? (
+                        <NavLink to="/admin" onClick={closeMenu}>Admin</NavLink>
+                    ) : (
+                        <>
+                            <NavLink to="/catalog" onClick={closeMenu}>Catalog</NavLink>
+                            <NavLink to="/bookings" onClick={closeMenu}>My Bookings</NavLink>
+                        </>
+                    )}
                     <NavLink to="/profile" onClick={closeMenu}>Profile</NavLink>
                     <button type="button" className="btn btn-ghost" onClick={() => { closeMenu(); logout(); }}>
                         Log out

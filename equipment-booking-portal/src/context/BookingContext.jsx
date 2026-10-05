@@ -1,51 +1,78 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { apiRequest } from '../api/client.js';
+import { AuthContext } from './AuthContext.jsx';
 
 export const BookingContext = createContext();
 
 export function BookingProvider({ children }) {
-    const [bookings, setBookings] = useState(() => {
-        const savedData = localStorage.getItem('portal_bookings');
-        return savedData ? JSON.parse(savedData) : [];
-    });
-
+    const { isLoggedIn } = useContext(AuthContext);
+    const [bookings, setBookings] = useState([]);
     const [toast, setToast] = useState(null);
 
-    useEffect(() => {
-        localStorage.setItem('portal_bookings', JSON.stringify(bookings));
-    }, [bookings]);
-
-    const showToast = (message, type = 'success') => {
+    const showToast = useCallback((message, type = 'success') => {
         setToast({ message, type });
         window.setTimeout(() => setToast(null), 3200);
-    };
+    }, []);
+
+    const refreshBookings = useCallback(async () => {
+        if (!isLoggedIn) {
+            setBookings([]);
+            return [];
+        }
+        const data = await apiRequest('/bookings');
+        setBookings(data);
+        return data;
+    }, [isLoggedIn]);
+
+    useEffect(() => {
+        refreshBookings().catch((err) => {
+            showToast(err.message, 'error');
+        });
+    }, [refreshBookings, showToast]);
 
     const isBooked = (itemId, date) => {
         return bookings.some((item) => item.id === itemId && item.date === date);
     };
 
-    const addBooking = (item) => {
+    const addBooking = async (item) => {
         if (!item.date) {
             showToast('Choose a date before booking.', 'error');
             return false;
         }
 
-        if (isBooked(item.id, item.date)) {
-            showToast(`${item.name} is already booked for ${item.date}.`, 'error');
+        try {
+            const created = await apiRequest('/bookings', {
+                method: 'POST',
+                body: JSON.stringify({ id: item.id, date: item.date })
+            });
+            setBookings((prev) => [...prev, created]);
+            showToast(`Booked ${created.name} for ${created.date}.`);
+            return true;
+        } catch (err) {
+            showToast(err.message, 'error');
             return false;
         }
-
-        setBookings((prevBookings) => [...prevBookings, item]);
-        showToast(`Booked ${item.name} for ${item.date}.`);
-        return true;
     };
 
-    const removeBooking = (itemId, date) => {
-        setBookings((prevBookings) => prevBookings.filter((item) => !(item.id === itemId && item.date === date)));
-        showToast('Booking cancelled.');
+    const removeBooking = async (bookingId) => {
+        try {
+            await apiRequest(`/bookings/${bookingId}`, { method: 'DELETE' });
+            setBookings((prev) => prev.filter((item) => item.bookingId !== bookingId));
+            showToast('Booking cancelled.');
+        } catch (err) {
+            showToast(err.message, 'error');
+        }
     };
 
     return (
-        <BookingContext.Provider value={{ bookings, addBooking, removeBooking, isBooked, toast }}>
+        <BookingContext.Provider value={{
+            bookings,
+            addBooking,
+            removeBooking,
+            isBooked,
+            refreshBookings,
+            toast
+        }}>
             {children}
         </BookingContext.Provider>
     );

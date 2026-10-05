@@ -6,8 +6,11 @@ function EquipmentCard({ item, isBookingsPage }) {
     const [selectedDate, setSelectedDate] = useState('');
     const today = new Date().toISOString().split('T')[0];
     const dateFieldId = `date-${item.id}`;
+    const bookedDates = item.bookedDates || [];
 
-    const alreadyBookedForSelected = selectedDate ? isBooked(item.id, selectedDate) : false;
+    const alreadyBookedForSelected = selectedDate
+        ? bookedDates.includes(selectedDate) || isBooked(item.id, selectedDate)
+        : false;
 
     let displayStatus = 'Select a date';
     let badgeClass = 'badge badge-warn';
@@ -34,7 +37,12 @@ function EquipmentCard({ item, isBookingsPage }) {
             )}
             <h3>{item.name}</h3>
             <p className="muted">{item.type} | {item.category}</p>
+            {item.campusName && <p className="muted">{item.campusName}</p>}
+            {item.address && <p className="muted">{item.address}</p>}
             <p>{item.description}</p>
+            {item.distanceKm != null && (
+                <p className="distance-note">{item.distanceKm.toFixed(1)} km from you</p>
+            )}
 
             <div>
                 {isBookingsPage ? (
@@ -66,7 +74,7 @@ function EquipmentCard({ item, isBookingsPage }) {
                     <button
                         type="button"
                         className="btn btn-danger"
-                        onClick={() => removeBooking(item.id, item.date)}
+                        onClick={() => removeBooking(item.bookingId)}
                     >
                         Cancel booking
                     </button>

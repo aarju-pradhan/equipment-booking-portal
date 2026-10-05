@@ -1,0 +1,194 @@
+import 'dotenv/config';
+import { connectDb } from './db.js';
+import { User } from './models/User.js';
+import { Equipment } from './models/Equipment.js';
+import { Booking } from './models/Booking.js';
+import { getCampus } from './campuses.js';
+
+const catalog = [
+    {
+        code: 'EQ-001',
+        name: 'Dell XPS 15 Developer Edition',
+        type: 'Equipment',
+        category: 'Laptops',
+        status: 'Available',
+        description: 'Standard 15-inch laptop for programming and general coursework.',
+        image: 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&w=800&q=80',
+        campusId: 'miller'
+    },
+    {
+        code: 'EQ-002',
+        name: 'Forensic Workstation',
+        type: 'Equipment',
+        category: 'Desktops',
+        status: 'In Use',
+        description: 'High-performance desktop workstation pre-loaded with FTK Imager and OSForensics.',
+        image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80',
+        campusId: 'miller'
+    },
+    {
+        code: 'EQ-003',
+        name: 'Shure BLX288 Wireless Microphone',
+        type: 'Equipment',
+        category: 'Audio/Visual',
+        status: 'Available',
+        description: 'Dual channel wireless microphone system for presentations and events.',
+        image: 'https://d1rzxhvrtciqq1.cloudfront.net/uploads/images/listingimage/1497788/image/big-32d42a2b73efd857c6a556ba472450de.jpeg',
+        campusId: 'miller'
+    },
+    {
+        code: 'EQ-004',
+        name: 'JBL Portable Speaker',
+        type: 'Equipment',
+        category: 'Audio/Visual',
+        status: 'Available',
+        description: 'High-output portable Bluetooth speaker.',
+        image: 'https://i.ebayimg.com/images/g/RnIAAeSwkLhpA95d/s-l1200.jpg',
+        campusId: 'north-sydney'
+    },
+    {
+        code: 'EQ-005',
+        name: 'Canon PIXMA TS5160',
+        type: 'Equipment',
+        category: 'Peripherals',
+        status: 'Maintenance',
+        description: 'Multifunction color printer for standard A4 document printing.',
+        image: 'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?auto=format&fit=crop&w=800&q=80',
+        campusId: 'miller'
+    },
+    {
+        code: 'EQ-006',
+        name: 'Epson Perfection V39 Scanner',
+        type: 'Equipment',
+        category: 'Peripherals',
+        status: 'Available',
+        description: 'High-resolution flatbed scanner for digitizing documents and photos.',
+        image: 'https://m.media-amazon.com/images/I/615Bq99ph1L._AC_UF894,1000_QL80_.jpg',
+        campusId: 'miller'
+    },
+    {
+        code: 'FA-001',
+        name: 'Small Study Room (2-4 People)',
+        type: 'Facility',
+        category: 'Study Spaces',
+        status: 'Available',
+        description: 'Quiet, compact room featuring an interactive smart board and power outlets.',
+        image: 'https://www.whistlerlibrary.ca/wp-content/uploads/2024/05/small-meeting-room-table-level-scaled.jpg',
+        campusId: 'miller'
+    },
+    {
+        code: 'FA-002',
+        name: 'Large Study Room (6-8 People)',
+        type: 'Facility',
+        category: 'Study Spaces',
+        status: 'In Use',
+        description: 'Spacious room designed for group project collaboration.',
+        image: 'https://studentit.unimelb.edu.au/__data/assets/image/0004/2992855/varieties/large.jpeg',
+        campusId: 'miller'
+    },
+    {
+        code: 'FA-003',
+        name: 'Meeting Room',
+        type: 'Facility',
+        category: 'Meeting Spaces',
+        status: 'Available',
+        description: 'Formal meeting space equipped with a smartboard and video conferencing.',
+        image: 'https://imagedelivery.net/NTBbUGXbgnQKXhDzmZxa9Q/4ea01e83-210a-421d-adf1-681264ed5f00/default?w=1000&h=600',
+        campusId: 'cbd'
+    },
+    {
+        code: 'FA-004',
+        name: 'Lecture Theatre',
+        type: 'Facility',
+        category: 'Presentation Spaces',
+        status: 'Available',
+        description: 'Large presentation space featuring dual projectors and integrated audio routing.',
+        image: 'https://arvia.my/wp-content/uploads/2025/05/smartboard-ptz-camera-smart-meeting-room-jabatan-perangkaan-malaysia-003-768x576.webp',
+        campusId: 'cbd'
+    },
+    {
+        code: 'FA-005',
+        name: 'Conference Room',
+        type: 'Facility',
+        category: 'Meeting Spaces',
+        status: 'Maintenance',
+        description: 'Large multi-purpose room configurable for workshops or conferences.',
+        image: 'https://votigo-systems.com.my/wp-content/uploads/2025/10/ETIKA-Conference-Room-scaled.jpg',
+        campusId: 'north-sydney'
+    },
+    {
+        code: 'FA-006',
+        name: 'Basketball Court',
+        type: 'Facility',
+        category: 'Recreation',
+        status: 'Available',
+        description: 'Full-size hardwood court. Bring your own sports equipment.',
+        image: 'https://s3.studentvip.com.au/photos/basketball-court-127578-small.jpg',
+        campusId: 'hurstville'
+    },
+    {
+        code: 'FA-007',
+        name: 'Tennis Court',
+        type: 'Facility',
+        category: 'Recreation',
+        status: 'Available',
+        description: 'Standard hardcourt. Night lighting available upon request.',
+        image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7v-y-HRn7LlSO8SdQOKBB647CWCtaTR0MV2rF7ICJpdecTAUhKNcZ7yI&s=10',
+        campusId: 'hurstville'
+    },
+    {
+        code: 'FA-008',
+        name: 'Indoor Sports Hall',
+        type: 'Facility',
+        category: 'Recreation',
+        status: 'In Use',
+        description: 'Large indoor hall suitable for badminton, volleyball, or indoor soccer.',
+        image: 'https://haslin.com.au/wp-content/uploads/2015/06/Menai31.jpg',
+        campusId: 'miller'
+    }
+];
+
+async function seed() {
+    if (!process.env.MONGODB_URI) {
+        throw new Error('Set MONGODB_URI in server/.env first.');
+    }
+
+    await connectDb(process.env.MONGODB_URI);
+    await Booking.deleteMany({});
+    await Equipment.deleteMany({});
+    await User.deleteMany({});
+
+    await User.create({
+        name: 'Demo Student',
+        email: 'demo.student@cihe.edu.au',
+        studentId: 's1234567',
+        password: 'Student123!',
+        role: 'student'
+    });
+
+    await User.create({
+        name: 'Campus Admin',
+        email: 'admin@cihe.edu.au',
+        studentId: 'admin01',
+        password: 'Admin123!',
+        role: 'admin'
+    });
+
+    await Equipment.insertMany(catalog.map((item) => {
+        const campus = getCampus(item.campusId);
+        return {
+            ...item,
+            campusName: campus.name,
+            address: campus.address,
+            lat: campus.lat,
+            lng: campus.lng
+        };
+    }));
+    console.log('Seed complete. Demo student: s1234567 / Student123!  Admin: admin01 / Admin123!');
+    process.exit(0);
+}
+
+seed().catch((err) => {
+    console.error(err);
+    process.exit(1);
+});

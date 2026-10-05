@@ -1,20 +1,31 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { BookingContext } from '../context/BookingContext';
+import { apiRequest } from '../api/client.js';
 
 function Profile() {
     const { bookings } = useContext(BookingContext);
     const { profile, updateProfile } = useContext(AuthContext);
+    const isAdmin = profile.role === 'admin';
+    const [catalogItems, setCatalogItems] = useState([]);
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState(profile);
     const [feedback, setFeedback] = useState({ message: '', isError: false });
+    const [isSaving, setIsSaving] = useState(false);
+
+    useEffect(() => {
+        if (!isAdmin) return;
+        apiRequest('/equipment')
+            .then(setCatalogItems)
+            .catch(() => setCatalogItems([]));
+    }, [isAdmin]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!formData.name.trim() || !formData.email.trim() || !formData.studentId.trim()) {
@@ -27,12 +38,19 @@ function Profile() {
             return;
         }
 
-        updateProfile(formData);
-        setFeedback({ message: 'Profile updated successfully.', isError: false });
-        window.setTimeout(() => {
-            setFeedback({ message: '', isError: false });
-            setIsEditing(false);
-        }, 1600);
+        setIsSaving(true);
+        try {
+            await updateProfile(formData);
+            setFeedback({ message: 'Profile updated successfully.', isError: false });
+            window.setTimeout(() => {
+                setFeedback({ message: '', isError: false });
+                setIsEditing(false);
+            }, 1600);
+        } catch (err) {
+            setFeedback({ message: err.message, isError: true });
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     return (
@@ -56,6 +74,10 @@ function Profile() {
                             <div>
                                 <p className="muted">Student ID</p>
                                 <p>{profile.studentId}</p>
+                            </div>
+                            <div>
+                                <p className="muted">Role</p>
+                                <p>{profile.role === 'admin' ? 'Admin' : 'Student'}</p>
                             </div>
                             <button
                                 type="button"
@@ -82,7 +104,9 @@ function Profile() {
                                 <label htmlFor="studentId">Student ID</label>
                                 <input id="studentId" className="text-input" type="text" name="studentId" value={formData.studentId} onChange={handleChange} />
                             </div>
-                            <button type="submit" className="btn btn-primary">Save changes</button>
+                            <button type="submit" className="btn btn-primary" disabled={isSaving}>
+                                {isSaving ? 'Saving…' : 'Save changes'}
+                            </button>
                             <button
                                 type="button"
                                 className="btn btn-secondary"
@@ -104,11 +128,29 @@ function Profile() {
                 </section>
 
                 <section className="card">
-                    <h2>Recent activity</h2>
+                    <h2>{isAdmin ? 'Catalog overview' : 'Recent activity'}</h2>
                     <div className="stack">
-                        {bookings.length > 0 ? (
+                        {isAdmin ? (
+                            catalogItems.length > 0 ? (
+                                <>
+                                    {catalogItems.slice(0, 6).map((item) => (
+                                        <article key={item.id} className="feature-card" style={{ textAlign: 'left' }}>
+                                            <h3>{item.name}</h3>
+                                            <p className="muted">{item.code} · {item.type} · {item.status}</p>
+                                            {item.campusName && <p className="muted">{item.campusName}</p>}
+                                        </article>
+                                    ))}
+                                    <Link to="/admin" className="btn btn-secondary">Open admin catalog</Link>
+                                </>
+                            ) : (
+                                <>
+                                    <p className="muted">No catalog items found.</p>
+                                    <Link to="/admin" className="btn btn-secondary">Manage catalog</Link>
+                                </>
+                            )
+                        ) : bookings.length > 0 ? (
                             bookings.map((booking) => (
-                                <article key={`${booking.id}-${booking.date}`} className="feature-card" style={{ textAlign: 'left' }}>
+                                <article key={booking.bookingId} className="feature-card" style={{ textAlign: 'left' }}>
                                     <h3>{booking.name}</h3>
                                     <p className="muted">Booked for {booking.date}</p>
                                 </article>

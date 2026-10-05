@@ -21,7 +21,7 @@ function Bookings() {
                 <div className="card-grid">
                     {bookings.map((booking) => (
                         <EquipmentCard
-                            key={`${booking.id}-${booking.date}`}
+                            key={booking.bookingId}
                             item={booking}
                             isBookingsPage
                         />

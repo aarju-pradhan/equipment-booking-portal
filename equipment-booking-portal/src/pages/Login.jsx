@@ -2,79 +2,97 @@ import React, { useContext, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 
 function Login() {
+    const [mode, setMode] = useState('login');
     const [studentId, setStudentId] = useState('');
     const [password, setPassword] = useState('');
-    const [isResetMode, setIsResetMode] = useState(false);
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
     const [feedback, setFeedback] = useState('');
     const [feedbackIsError, setFeedbackIsError] = useState(false);
-    const { login } = useContext(AuthContext);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const { login, register } = useContext(AuthContext);
 
-    const handleLoginSubmit = (e) => {
+    const showError = (message) => {
+        setFeedback(message);
+        setFeedbackIsError(true);
+    };
+
+    const handleLoginSubmit = async (e) => {
         e.preventDefault();
         setFeedback('');
         setFeedbackIsError(false);
 
         if (!studentId.trim() || !password.trim()) {
-            setFeedback('Enter both your student ID and password.');
-            setFeedbackIsError(true);
+            showError('Enter both your student ID and password.');
             return;
         }
 
-        const success = login(studentId.trim(), password);
-        if (!success) {
-            setFeedback('Unable to sign in. Check your details and try again.');
-            setFeedbackIsError(true);
+        setIsSubmitting(true);
+        try {
+            await login(studentId.trim(), password);
+        } catch (err) {
+            showError(err.message);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
-    const handleResetSubmit = (e) => {
+    const handleRegisterSubmit = async (e) => {
         e.preventDefault();
-        if (!studentId.trim()) {
-            setFeedback('Enter your student ID to request a reset link.');
-            setFeedbackIsError(true);
+        setFeedback('');
+        setFeedbackIsError(false);
+
+        if (!name.trim() || !email.trim() || !studentId.trim() || !password.trim()) {
+            showError('All fields are required.');
             return;
         }
-        setFeedbackIsError(false);
-        setFeedback(`A password reset link would be sent to the university email for ${studentId}.`);
-        setPassword('');
+
+        setIsSubmitting(true);
+        try {
+            await register({
+                name: name.trim(),
+                email: email.trim(),
+                studentId: studentId.trim(),
+                password
+            });
+        } catch (err) {
+            showError(err.message);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
         <main className="login-screen">
             <div className="login-card">
-                <h1>{isResetMode ? 'Reset password' : 'University portal login'}</h1>
+                <h1>{mode === 'register' ? 'Create account' : 'University portal login'}</h1>
 
-                {isResetMode ? (
-                    <form className="stack" onSubmit={handleResetSubmit} noValidate>
-                        <p className="muted">
-                            Enter your student ID and we will send a recovery link to your university email.
-                        </p>
+                {mode === 'register' ? (
+                    <form className="stack" onSubmit={handleRegisterSubmit} noValidate>
                         <div className="form-field">
-                            <label htmlFor="reset-student-id">Student ID</label>
-                            <input
-                                id="reset-student-id"
-                                className="text-input"
-                                type="text"
-                                value={studentId}
-                                onChange={(e) => setStudentId(e.target.value)}
-                                autoComplete="username"
-                                placeholder="e.g. s1234567"
-                            />
+                            <label htmlFor="reg-name">Full name</label>
+                            <input id="reg-name" className="text-input" type="text" value={name} onChange={(e) => setName(e.target.value)} />
                         </div>
-                        <button type="submit" className="btn btn-primary">Send reset link</button>
-                        <button
-                            type="button"
-                            className="inline-link"
-                            onClick={() => {
-                                setIsResetMode(false);
-                                setFeedback('');
-                                setFeedbackIsError(false);
-                            }}
-                        >
+                        <div className="form-field">
+                            <label htmlFor="reg-email">University email</label>
+                            <input id="reg-email" className="text-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                        </div>
+                        <div className="form-field">
+                            <label htmlFor="reg-student-id">Student ID</label>
+                            <input id="reg-student-id" className="text-input" type="text" value={studentId} onChange={(e) => setStudentId(e.target.value)} placeholder="e.g. s1234567" />
+                        </div>
+                        <div className="form-field">
+                            <label htmlFor="reg-password">Password</label>
+                            <input id="reg-password" className="text-input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                        </div>
+                        <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+                            {isSubmitting ? 'Creating account…' : 'Register'}
+                        </button>
+                        <button type="button" className="inline-link" onClick={() => { setMode('login'); setFeedback(''); }}>
                             Back to sign in
                         </button>
                         {feedback && (
-                            <div className={`feedback ${feedbackIsError ? 'feedback-error' : 'feedback-success'}`} role="status">
+                            <div className={`feedback ${feedbackIsError ? 'feedback-error' : 'feedback-success'}`} role="alert">
                                 {feedback}
                             </div>
                         )}
@@ -94,20 +112,7 @@ function Login() {
                             />
                         </div>
                         <div className="form-field">
-                            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.75rem' }}>
-                                <label htmlFor="password">Password</label>
-                                <button
-                                    type="button"
-                                    className="inline-link"
-                                    onClick={() => {
-                                        setIsResetMode(true);
-                                        setFeedback('');
-                                        setFeedbackIsError(false);
-                                    }}
-                                >
-                                    Forgot password?
-                                </button>
-                            </div>
+                            <label htmlFor="password">Password</label>
                             <input
                                 id="password"
                                 className="text-input"
@@ -115,11 +120,15 @@ function Login() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 autoComplete="current-password"
-                                placeholder="Enter your password"
                             />
                         </div>
-                        <button type="submit" className="btn btn-primary">Sign in</button>
-                        <p className="muted">Demo login: any student ID and password will sign you in.</p>
+                        <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+                            {isSubmitting ? 'Signing in…' : 'Sign in'}
+                        </button>
+                        <button type="button" className="inline-link" onClick={() => { setMode('register'); setFeedback(''); }}>
+                            Create an account
+                        </button>
+                        <p className="muted">Demo student: s1234567 / Student123! · Admin: admin01 / Admin123!</p>
                         {feedback && (
                             <div className={`feedback ${feedbackIsError ? 'feedback-error' : 'feedback-success'}`} role="alert">
                                 {feedback}
